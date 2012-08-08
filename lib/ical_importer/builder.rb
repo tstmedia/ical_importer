@@ -17,7 +17,7 @@ module IcalImporter
         @recurring_builder << event
         nil # Don't want this messing up our collect in Collector
       else
-        SingleEvent.new(@event, @recurring_builder).build_event
+        SingleEvent.new(@event, @recurring_builder).build
       end
     end
   end
