@@ -1,32 +1,31 @@
 module IcalImporter
   class RemoteEvent
     attr_accessor :event, :utc
+    alias :utc? :utc
+    delegate :recurs?, :rrule_property, :exdate, :to => :event
+
     def initialize(event)
       @event = event
-      @utc = !(@event.dtstart.tzid == :floating)
-    end
-
-    def utc?
-      utc
-    end
-
-    def recurs?
-      @event.recurs?
+      begin
+        @utc = @event.dtstart.try(:tzid) != :floating
+      rescue
+        @utc = true
+      end
     end
 
     def start_date_time
-      if @event.dtstart.is_a? DateTime
-        @event.dtstart.tzid == :floating ? @event.dtstart : @event.dtstart.utc
+      if event.dtstart.is_a? DateTime
+        event.dtstart.tzid == :floating ? event.dtstart : event.dtstart.utc
       else
-        @event.dtstart.to_datetime
+        event.dtstart.to_datetime
       end
     end
 
     def end_date_time
-      if @event.dtend.is_a? DateTime
-        (@event.dtend.tzid == :floating) ? @event.dtend : @event.dtend.utc
+      if event.dtend.is_a? DateTime
+        (event.dtend.tzid == :floating) ? event.dtend : event.dtend.utc
       else
-        @event.dtend.to_datetime
+        event.dtend.to_datetime
       end
     end
 
@@ -36,10 +35,10 @@ module IcalImporter
 
     def event_attributes
       {
-        :title => @event.summary,
+        :title => event.summary,
         :utc => utc?,
-        :description => @event.description,
-        :location => @event.location || '',
+        :description => event.description,
+        :location => event.location || '',
         :start_date_time => start_date_time,
         :end_date_time => end_date_time,
         :all_day_event => all_day_event?

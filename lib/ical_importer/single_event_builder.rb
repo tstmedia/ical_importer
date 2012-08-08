@@ -1,35 +1,35 @@
 module IcalImporter
   class SingleEventBuilder
-    attr_accessor :event, :recurring_builder, :local_event
+    attr_accessor :event, :recurrence_builder, :local_event
 
-    def initialize(event, recurring_builder)
+    def initialize(event, recurrence_builder)
       @event = RemoteEvent.new event # AKA Remote Event
-      @recurring_builder = recurring_builder
+      @recurrence_builder = recurrence_builder
       attributes = { :uid => event.uid }.merge @event.event_attributes
       @local_event = LocalEvent.new attributes
     end
 
-    # Get single-occurrence events built and get a lits of recurring
+    # Get single-occurrence events built and get a lits of recurrence
     # events, these must be build last
     def build
       # handle recuring events
       @local_event.tap do |le|
         if @event.recurs?
-          rrule = remote_event.rrule_property.first # only support recurring on one schedule
+          rrule = @event.rrule_property.first # only support recurrence on one schedule
           # set out new event's basic rucurring properties
-          le.attributes = recurring_attributes rrule
+          le.attributes = recurrence_attributes rrule
 
           set_date_exclusion
           frequency_set rrule
         else # make sure we remove this if it changed
-          le.attributes = non_recurring_attributes
+          le.attributes = non_recurrence_attributes
         end
       end
     end
 
     private
 
-    def non_recurring_attributes
+    def non_recurrence_attributes
       attributes = {
         :recur_interval => "none",
         :recur_interval_value => nil,
@@ -46,7 +46,7 @@ module IcalImporter
       attributes
     end
 
-    def recurring_attributes(rrule)
+    def recurrence_attributes(rrule)
       {
         :recur_interval => recur_map[rrule.freq],
         :recur_interval_value => rrule.interval,
@@ -56,7 +56,7 @@ module IcalImporter
 
     def set_date_exclusion
       # set any date exclusions
-      @local_event.date_exclusions = remote_event.exdate.flatten.map{|d| DateExclusion.new(:exclude_date => d)}
+      @local_event.date_exclusions = @event.exdate.flatten.map{|d| DateExclusion.new(:exclude_date => d)}
     end
 
     def frequency_set(rrule)
@@ -79,7 +79,7 @@ module IcalImporter
               @local_event.send "recur_week_#{day}=", remote_days.include?(abbr)
             end
           end
-          # recurring X times is probably broken - we can select multiple times in a week
+          # recurrence X times is probably broken - we can select multiple times in a week
           @local_event.recur_end_date = (frequency_template / remote_days.length).weeks
         when "MONTHLY"
           @local_event.recur_month_repeat_by = (rrule.to_ical =~ /BYDAY/) ? "day_of_week" : "day_of_month"
