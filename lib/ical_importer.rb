@@ -1,4 +1,5 @@
 require 'active_support/all'
+require 'ri_cal'
 
 require 'ical_importer/builder'
 require 'ical_importer/collector'
