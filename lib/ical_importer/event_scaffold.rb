@@ -4,12 +4,14 @@ module IcalImporter
       attr_accessor :class_attributes
     end
 
-    class_attributes  = [
+    @class_attributes = [
+      :uid,
       :title,
       :description,
       :location,
       :start_date_time,
       :end_date_time,
+      :utc,
       :date_exclusions,
       :recur_end_date,
       :recur_month_repeat_by,
