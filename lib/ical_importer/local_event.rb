@@ -20,7 +20,7 @@ module IcalImporter
       :recur_end_date,
       :recurrence_id,
       :all_day_event,
-      :recurring
+      :recurrence
     ]
 
     attr_accessor *class_attributes

@@ -1,8 +1,6 @@
 module IcalImporter
   class Parser
-    attr_accessor :bare_feed,
-      :feed, # Parsed
-      :url
+    attr_reader :feed, :bare_feed, :url
 
     def initialize(url)
       @url = url
