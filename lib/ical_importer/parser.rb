@@ -57,6 +57,10 @@ module IcalImporter
       @bare_feed.present? and feed_has_changed?
     end
 
+    def worth_parsing?
+      should_parse? && @feed.present? && @feed.first
+    end
+
     def parse
       if should_parse?
         if @feed.present?
