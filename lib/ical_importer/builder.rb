@@ -15,6 +15,7 @@ module IcalImporter
     def build
       if handle_as_recurring?
         @recurring_builder << event
+        nil # Don't want this messing up our collect in Collector
       else
         SingleEvent.new(@event, @recurring_builder).build_event
       end
