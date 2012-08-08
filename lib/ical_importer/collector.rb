@@ -3,6 +3,7 @@ module IcalImporter
     attr_accessor :collection, :events
 
     def initialize(events)
+      @events = events
       @collection = []
     end
 
