@@ -30,8 +30,18 @@ module IcalImporter
     end
 
     def initialize(attributes)
+      self.attributes = attributes
+    end
+
+    def to_hash
+      Hash[*self.class.class_attributes.collect do |attribute|
+        [attribute.to_sym, send(attribute)]
+      end.flatten]
+    end
+
+    def attributes=(attributes)
       attributes.each do |name, value|
-        instance_variable_set "@#{name}", value if self.class.attributes.include? name.to_sym
+        instance_variable_set "@#{name}", value if self.class.class_attributes.include? name.to_sym
       end
     end
   end
