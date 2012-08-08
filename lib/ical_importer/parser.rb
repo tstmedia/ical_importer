@@ -11,6 +11,45 @@ module IcalImporter
       end
     end
 
+    def should_parse?
+      bare_feed.present?
+    end
+
+    def worth_parsing?
+      should_parse? && feed.present? && feed.first
+    end
+
+    def all_events(&block)
+      tap_and_each (@imported_single_events || []) + (@imported_recurrence_events || []), &block
+    end
+
+    def single_events(&block)
+      tap_and_each (@imported_single_events || []), &block
+    end
+
+    def recurrence_events(&block)
+      tap_and_each (@imported_recurrence_events || []), &block
+    end
+
+    def parse(&block)
+      if worth_parsing?
+        collected = Collector.new(feed.first.events).collect
+        @imported_single_events = collected.single_events
+        @imported_recurrence_events = collected.recurrence_events
+        tap_and_each (@imported_single_events + @imported_recurrence_events), &block
+      end
+    end
+
+    private
+
+    def tap_and_each(list)
+      list.tap do |r|
+        r.each do |event|
+          yield event if block_given?
+        end
+      end
+    end
+
     def open_ical(protocol = 'http')
       raise ArgumentError, "Must be http or https" unless %w[http https].include? protocol
       begin
@@ -32,43 +71,5 @@ module IcalImporter
       URI.escape(uri)
     end
 
-    def should_parse?
-      @bare_feed.present?
-    end
-
-    def worth_parsing?
-      should_parse? && @feed.present? && @feed.first
-    end
-
-    def single_events
-      @imported_single_events.tap do |s|
-        s.each do |event|
-          yield event if block_given?
-        end
-      end
-    end
-
-    def recurring_events
-      @imported_recurring_events.tap do |r|
-        r.each do |event|
-          yield event if block_given?
-        end
-      end
-    end
-
-    def parse
-      if should_parse?
-        if @feed.present? and calendar = @feed.first
-          collected = Collector.new(calendar.events).collect
-
-          @imported_single_events = collected.single_events
-          @imported_recurring_events = collected.recurring_events
-
-          (@imported_single_events + @imported_recurring_events).each do |event|
-            yield event if block_given?
-          end
-        end
-      end
-    end
   end
 end
