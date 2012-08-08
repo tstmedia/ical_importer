@@ -10,9 +10,10 @@ module IcalImporter
       # TODO
       # raise "iCal feed (#{id}) does not contain UID" if remote_event.uid.blank?
       # find and overwrite the event created by this remote event
-      @local_event = Event.find_or_initialize_by_ical_uid event.uid
+      #@local_event = Event.find_or_initialize_by_ical_uid event.uid
 
-      @local_event.attributes = @event.event_attributes
+      attributes = { :uid => event.uid }.merge @event.event_attributes
+      @local_event = EventScaffold.new attributes
     end
 
     # Get single-occurrence events built and get a lits of recurring
