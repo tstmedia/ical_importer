@@ -38,13 +38,18 @@ module IcalImporter
       URI.escape(uri)
     end
 
+    # TODO Open this up
     def feed_has_changed?
-      feed = @bare_feed.gsub(/DTSTAMP:.*\s/, '')
-      if Digest::MD5.hexdigest(feed) == Cache.get(CKey.ical_last_run_hash(@originator_id))
-        false
-      else
-        Cache.put(CKey.ical_last_run_hash(@originator_id), Digest::MD5.hexdigest(feed))
-        true
+      feed = @bare_feed.read.gsub(/DTSTAMP:.*\s/, '')
+      begin
+        if Digest::MD5.hexdigest(feed) == Cache.get(CKey.ical_last_run_hash(@originator_id))
+          false
+        else
+          Cache.put(CKey.ical_last_run_hash(@originator_id), Digest::MD5.hexdigest(feed))
+          true
+        end
+      rescue Exception => e
+        true # If someone doesn't use above, should default to import the feed
       end
     end
 
