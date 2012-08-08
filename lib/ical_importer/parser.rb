@@ -7,7 +7,7 @@ module IcalImporter
       :after_parse,
       :finder
 
-    def initialize(url, originator_id)
+    def initialize(url, originator_id = nil)
       @url = url
       @bare_feed = open_ical
       @originator_id = originator_id
