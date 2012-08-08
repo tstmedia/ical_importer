@@ -1,21 +1,24 @@
 module IcalImporter
   class Collector
-    attr_accessor :collection, :events
+    attr_accessor :single_events, :events, :recurring_events
 
     def initialize(events)
       @events = events
-      @collection = []
+      @single_events = []
+      @recurring_events = []
     end
 
     def collect
-      recurring_builder = RecurringBuilder.new
-      @collection.tap do |c|
-        events.each do |remote_event|
-          c << Builder.new(remote_event, recurring_builder).build
+      self.tap do
+        recurring_builder = RecurringEventBuilder.new
+        @single_events.tap do |c|
+          events.each do |remote_event|
+            c << Builder.new(remote_event, recurring_builder).build
+          end
+          @recurring_events = recurring_builder.build.built_events.flatten.compact
+          c.flatten!
+          c.compact!
         end
-        c += recurring_builder.build.built_events
-        c.flatten!
-        c.compact!
       end
     end
   end
