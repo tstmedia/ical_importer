@@ -2,15 +2,11 @@ module IcalImporter
   class Parser
     attr_accessor :bare_feed,
       :feed, # Parsed
-      :originator_id,
-      :url,
-      :after_parse,
-      :finder
+      :url
 
-    def initialize(url, originator_id = nil)
+    def initialize(url)
       @url = url
       @bare_feed = open_ical
-      @originator_id = originator_id
       if should_parse?
         @bare_feed.pos = 0
         @feed = RiCal.parse @bare_feed
@@ -38,61 +34,42 @@ module IcalImporter
       URI.escape(uri)
     end
 
-    # TODO Open this up
-    def feed_has_changed?
-      feed = @bare_feed.read.gsub(/DTSTAMP:.*\s/, '')
-      begin
-        if Digest::MD5.hexdigest(feed) == Cache.get(CKey.ical_last_run_hash(@originator_id))
-          false
-        else
-          Cache.put(CKey.ical_last_run_hash(@originator_id), Digest::MD5.hexdigest(feed))
-          true
-        end
-      rescue Exception => e
-        true # If someone doesn't use above, should default to import the feed
-      end
-    end
-
     def should_parse?
-      @bare_feed.present? and feed_has_changed?
+      @bare_feed.present?
     end
 
     def worth_parsing?
       should_parse? && @feed.present? && @feed.first
     end
 
+    def single_events
+      @imported_single_events.tap do |s|
+        s.each do |event|
+          yield event if block_given?
+        end
+      end
+    end
+
+    def recurring_events
+      @imported_recurring_events.tap do |r|
+        r.each do |event|
+          yield event if block_given?
+        end
+      end
+    end
+
     def parse
       if should_parse?
         if @feed.present? and calendar = @feed.first
-          imported_events = Collector.new(calendar.events).collect
+          collected = Collector.new(calendar.events).collect
 
-          imported_events.each do |event|
-            yield event
-          end
+          @imported_single_events = collected.single_events
+          @imported_recurring_events = collected.recurring_events
 
-          # TODO Make a callback
-          # find & destroy any events that where created by this feed but arent' in there anymore
-          query = Event.where(:ical_feed_id => self.id)
-          if imported_events.length > 0
-            query.where(["id NOT IN (?)", imported_events.map(&:id)])
+          (@imported_single_events + @imported_recurring_events).each do |event|
+            yield event if block_given?
           end
-          Ngin.log :ical_feed,
-            object: self,
-            message: "Destroy all",
-            custom_fields: {
-              deleting: query.collect { |x| [x.try(:id), x.try(:title)] },
-              keeping: imported_events.collect { |x| [x.try(:id), x.try(:title)] }
-            }
-            query.destroy_all
         end
-
-        update_attributes(:last_run_at => DateTime.now)
-        imported_events
-      else
-        Ngin.log :ical_feed,
-          :object => self,
-          :message => "Remote calendar was empty, failing silently"
-        false
       end
     end
   end
