@@ -1,13 +1,22 @@
 module IcalImporter
   class Construct
-    attr_accessor :event
+    attr_accessor :event, :utc
     def initialize(event)
       @event = event
+      @utc = !(@event.dtstart.tzid == :floating)
+    end
+
+    def utc?
+      utc
+    end
+
+    def recurs?
+      @event.recurs?
     end
 
     def start_date_time
       if @event.dtstart.is_a? DateTime
-        @event.dtstart.tzid == :floating ? @event.dtstart : to_local(@event.dtstart.utc)
+        @event.dtstart.tzid == :floating ? @event.dtstart : @event.dtstart.utc
       else
         @event.dtstart.to_datetime
       end
@@ -15,7 +24,7 @@ module IcalImporter
 
     def end_date_time
       if @event.dtend.is_a? DateTime
-        (@event.dtend.tzid == :floating) ? @event.dtend : to_local(@event.dtend.utc)
+        (@event.dtend.tzid == :floating) ? @event.dtend : @event.dtend.utc
       else
         @event.dtend.to_datetime
       end
@@ -27,8 +36,9 @@ module IcalImporter
 
     def event_attributes
       {
-        :ical_feed_id => self, #TODO Get the ID
+        #:ical_feed_id => self, #TODO Get the ID
         :title => @event.summary,
+        :utc => utc?,
         :description => @event.description,
         :location => @event.location || '',
         :start_date_time => start_date_time,
