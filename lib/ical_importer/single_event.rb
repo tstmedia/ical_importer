@@ -30,25 +30,12 @@ module IcalImporter
       else # make sure we remove this if it changed
         @local_event.attributes = non_recurring_attributes
       end
-      @local_event.page_nodes = self.page_nodes # overwrite event's tags #TODO GET FROM ORIGINAL OBJ
+      #@local_event.page_nodes = self.page_nodes # overwrite event's tags #TODO GET FROM ORIGINAL OBJ
 
-      safe_save
+      @local_event
     end
 
     private
-
-    def safe_save
-      begin
-        @local_event.save!
-      rescue ActiveRecord::RecordNotUnique => e
-        Ngin.log :ical_feed,
-          :object => self,
-          :error => e,
-          :message => "Duplicate key error",
-          :custom_fields => attributes
-      end
-      @local_event
-    end
 
     def non_recurring_attributes
       attributes = {
