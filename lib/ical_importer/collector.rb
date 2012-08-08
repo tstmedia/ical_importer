@@ -9,11 +9,14 @@ module IcalImporter
 
     def collect
       recurring_builder = RecurringBuilder.new
-      @collection = events.collect do |remote_event|
-         Builder.new(remote_event, recurring_builder).build
+      @collection.tap do |c|
+        events.each do |remote_event|
+          c << Builder.new(remote_event, recurring_builder).build
+        end
+        c += recurring_builder.build.built_events
+        c.flatten!
+        c.compact!
       end
-      @collection += recurring_builder.build.built_events
-      @collection.flatten!.compact!
     end
   end
 end
