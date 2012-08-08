@@ -1,5 +1,5 @@
 module IcalImporter
-  class RecurringEventBuilder
+  class RecurrenceEventBuilder
     attr_accessor :events_to_build, :built_events
     def initialize
       @events_to_build = []
@@ -27,7 +27,7 @@ module IcalImporter
         :start_date_time => local_event.start_date_time,
         :end_date_time => local_event.end_date_time,
         :date_exclusions => [DateExclusion.new(:exclude_date => remote_event.recurrence_id)],
-        :recurring => true
+        :recurrence => true
       })
     end
   end
