@@ -44,22 +44,22 @@ module IcalImporter
         :recur_end_date => nil
       }
       if !@local_event.all_day_event && @event.start_date_time.day != @event.end_date_time.day # single event that spans multiple days
-        attributes.merge {
+        attributes.merge({
           :recur_interval => "day",
           :recur_interval_value => 1,
           :recur_end_date => @event.end_date_time.end_of_day - 1.day,
           :all_day_event => true
-        }
+        })
       end
       attributes
     end
 
     def recurring_attributes(rrule)
       {
-          :recur_interval => recur_map[rrule.freq],
-          :recur_interval_value => rrule.interval,
-          :recur_end_date => rrule.until.try(:to_datetime)
-        }
+        :recur_interval => recur_map[rrule.freq],
+        :recur_interval_value => rrule.interval,
+        :recur_end_date => rrule.until.try(:to_datetime)
+      }
     end
 
     def set_date_exclusion
