@@ -1,5 +1,5 @@
 module IcalImporter
-  class EventScaffold
+  class LocalEvent
     class << self
       attr_accessor :class_attributes
     end
@@ -18,7 +18,9 @@ module IcalImporter
       :recur_interval,
       :recur_interval_value,
       :recur_end_date,
-      :all_day_event
+      :recurrence_id,
+      :all_day_event,
+      :recurring
     ]
 
     attr_accessor *class_attributes
@@ -31,13 +33,17 @@ module IcalImporter
 
     def initialize(attributes)
       self.attributes = attributes
+      @date_exclusions ||= []
+    end
+
+    def get_attributes(list)
+      attributes.select { |k,_| list.include? k.to_s }
     end
 
     def to_hash
-      Hash[*self.class.class_attributes.collect do |attribute|
-        [attribute.to_sym, send(attribute)]
-      end.flatten]
+      Hash[*self.class.class_attributes.collect { |attribute| [attribute.to_sym, send(attribute)] }.flatten(1)]
     end
+    alias :attributes :to_hash
 
     def attributes=(attributes)
       attributes.each do |name, value|

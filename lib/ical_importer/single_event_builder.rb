@@ -1,38 +1,30 @@
 module IcalImporter
-  class SingleEvent
+  class SingleEventBuilder
     attr_accessor :event, :recurring_builder, :local_event
 
     def initialize(event, recurring_builder)
-      @event = Construct.new event # AKA Remote Event
+      @event = RemoteEvent.new event # AKA Remote Event
       @recurring_builder = recurring_builder
-
-      # simple validity check
-      # TODO
-      # raise "iCal feed (#{id}) does not contain UID" if remote_event.uid.blank?
-      # find and overwrite the event created by this remote event
-      #@local_event = Event.find_or_initialize_by_ical_uid event.uid
-
       attributes = { :uid => event.uid }.merge @event.event_attributes
-      @local_event = EventScaffold.new attributes
+      @local_event = LocalEvent.new attributes
     end
 
     # Get single-occurrence events built and get a lits of recurring
     # events, these must be build last
     def build
       # handle recuring events
-      if @event.recurs?
-        rrule = remote_event.rrule_property.first # only support recurring on one schedule
-        # set out new event's basic rucurring properties
-        @local_event.attributes = recurring_attributes
+      @local_event.tap do |le|
+        if @event.recurs?
+          rrule = remote_event.rrule_property.first # only support recurring on one schedule
+          # set out new event's basic rucurring properties
+          le.attributes = recurring_attributes rrule
 
-        set_date_exclusion
-        frequency_set rrule
-      else # make sure we remove this if it changed
-        @local_event.attributes = non_recurring_attributes
+          set_date_exclusion
+          frequency_set rrule
+        else # make sure we remove this if it changed
+          le.attributes = non_recurring_attributes
+        end
       end
-      #@local_event.page_nodes = self.page_nodes # overwrite event's tags #TODO GET FROM ORIGINAL OBJ
-
-      @local_event
     end
 
     private

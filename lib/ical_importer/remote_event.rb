@@ -1,5 +1,5 @@
 module IcalImporter
-  class Construct
+  class RemoteEvent
     attr_accessor :event, :utc
     def initialize(event)
       @event = event
@@ -36,7 +36,6 @@ module IcalImporter
 
     def event_attributes
       {
-        #:ical_feed_id => self, #TODO Get the ID
         :title => @event.summary,
         :utc => utc?,
         :description => @event.description,
