@@ -21,7 +21,7 @@ module IcalImporter
       :all_day_event
     ]
 
-    attr_accessor *self.class.class_attributes
+    attr_accessor *class_attributes
     DAYS = %w[sunday monday tuesday wednesday thursday friday saturday]
 
     DAYS.each do |day|
