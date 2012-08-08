@@ -63,10 +63,8 @@ module IcalImporter
 
     def parse
       if should_parse?
-        if @feed.present?
-          calendar = @feed.first
-
-          imported_events = Collector.new(calendar).collect
+        if @feed.present? and calendar = @feed.first
+          imported_events = Collector.new(calendar.events).collect
 
           imported_events.each do |event|
             yield event
