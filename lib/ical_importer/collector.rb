@@ -1,6 +1,6 @@
 module IcalImporter
   class Collector
-    attr_accessor :single_events, :events, :recurrence_events
+    attr_reader :single_events, :events, :recurrence_events
 
     def initialize(events)
       @events = events
@@ -11,7 +11,7 @@ module IcalImporter
     def collect
       self.tap do
         recurrence_builder = RecurrenceEventBuilder.new
-        @single_events.tap do |c|
+        single_events.tap do |c|
           events.each do |remote_event|
             c << Builder.new(remote_event, recurrence_builder).build
           end
