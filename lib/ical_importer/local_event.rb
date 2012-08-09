@@ -37,6 +37,8 @@ module IcalImporter
     end
 
     def get_attributes(list)
+      raise ArgumentError, "Must be an Array" unless list.is_a? Array
+      list.collect! { |e| e.to_s }
       attributes.select { |k,_| list.include? k.to_s }
     end
 
