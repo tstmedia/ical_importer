@@ -2,7 +2,9 @@
 
 [![TravisCI](https://secure.travis-ci.org/tstmedia/ical_importer.png "TravisCI")](http://travis-ci.org/tstmedia/ical_importer "Travis-CI IcalImporter")
 
+<!---
 [RubyGems](NOT YET "NOT YET")
+--->
 
 Easily import your iCal feeds.
 
