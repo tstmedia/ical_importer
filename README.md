@@ -6,6 +6,10 @@
 [RubyGems](NOT YET "NOT YET")
 --->
 
+# Notes
+
+* Recurrence events are not the same as recurring events
+
 Easily import your iCal feeds.
 
 Simply run the parser and you'll be given a list of objectified events to manage and manipulate.
