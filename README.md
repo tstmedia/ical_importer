@@ -6,10 +6,6 @@ Easily import your iCal feeds.
 
 [RubyGems](http://rubygems.org/gems/ical_importer)
 
-# Notes
-
-* Recurrence events are not the same as recurring events
-
 # Usage
 
 Add
@@ -64,6 +60,10 @@ parser.all_events
 parser.recurrence_events
 parser.single_events
 ```
+
+# Notes
+
+* Recurrence events are not the same as recurring events
 
 # TODO
 
