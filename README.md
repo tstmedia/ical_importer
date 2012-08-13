@@ -4,9 +4,7 @@ Easily import your iCal feeds.
 
 [![TravisCI](https://secure.travis-ci.org/tstmedia/ical_importer.png "TravisCI")](http://travis-ci.org/tstmedia/ical_importer "Travis-CI IcalImporter")
 
-<!---
-[RubyGems](NOT YET "NOT YET")
---->
+[RubyGems](http://rubygems.org/gems/ical_importer)
 
 # Notes
 
@@ -17,7 +15,7 @@ Easily import your iCal feeds.
 Add
 
 ```ruby
-gem 'ical_importer', :git => 'http://github.com/tstmedia/ical_importer.git'
+gem 'ical_importer'
 ```
 
 to your Gemfile
@@ -61,6 +59,7 @@ parser.parse do |e|
 end
 
 # Each of these also accepts blocks and returns a list
+# MUST parse before using these
 parser.all_events
 parser.recurrence_events
 parser.single_events
