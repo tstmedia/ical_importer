@@ -17,10 +17,10 @@ RSpec.configure do |config|
   config.order = 'random'
 end
 
-def sample_ics
-  File.open sample_ics_path
+def sample_ics(file_name=nil)
+  File.open sample_ics_path(file_name)
 end
 
-def sample_ics_path
-  File.join(File.dirname(__FILE__), 'support', 'test.ics')
+def sample_ics_path(file_name=nil)
+  File.join(File.dirname(__FILE__), 'support', "#{file_name || 'test'}.ics")
 end

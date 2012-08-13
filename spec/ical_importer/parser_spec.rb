@@ -7,6 +7,7 @@ module IcalImporter
     let(:bare_stuff) { stub :pos= => true }
     before do
       ::Timeout.stub!(:timeout).and_yield
+      RemoteEvent.any_instance.stub :all_day_event? => true
     end
 
     describe '#initialize' do

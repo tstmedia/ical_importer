@@ -1,6 +1,7 @@
 require 'active_support/all'
 require 'ri_cal'
 
+require 'ical_importer/date_exclusion'
 require 'ical_importer/builder'
 require 'ical_importer/collector'
 require 'ical_importer/remote_event'

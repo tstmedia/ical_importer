@@ -1,31 +1,34 @@
 module IcalImporter
   class RecurrenceEventBuilder
-    attr_accessor :events_to_build, :built_events
+    attr_reader :events_to_build, :built_events
     def initialize
       @events_to_build = []
       @built_events = []
     end
 
     def <<(event)
+      raise ArgumentError, "Must be a RiCal Event" unless event.is_a? RiCal::Component::Event
       @events_to_build << event
     end
 
     def build
-      @events_to_build.each do |remote_event|
-        @built_events << build_new_local_event(remote_event)
+      self.tap do
+        events_to_build.each do |remote_event|
+          @built_events << build_new_local_event(remote_event)
+        end
       end
-      self
     end
 
     private
 
     def build_new_local_event(remote_event)
-      local_event = LocalEvent.new({
+      LocalEvent.new({
+        :uid => remote_event.uid,
         :title => remote_event.summary,
-        :description => local_event.description,
+        :description => remote_event.description,
         :location => remote_event.location || '',
-        :start_date_time => local_event.start_date_time,
-        :end_date_time => local_event.end_date_time,
+        :start_date_time => remote_event.start_date_time,
+        :end_date_time => remote_event.end_date_time,
         :date_exclusions => [DateExclusion.new(:exclude_date => remote_event.recurrence_id)],
         :recurrence => true
       })

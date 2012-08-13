@@ -4,7 +4,7 @@ module IcalImporter
 
     def initialize(attributes)
       attributes.each do |name, value|
-        instance_variable_set "@#{name}", value if [:date_exclusion].includ? name.to_sym
+        instance_variable_set "@#{name}", value if [:date_exclusion].include? name.to_sym
       end
     end
   end

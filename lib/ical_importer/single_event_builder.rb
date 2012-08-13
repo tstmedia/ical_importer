@@ -1,12 +1,10 @@
 module IcalImporter
   class SingleEventBuilder
-    attr_accessor :event, :recurrence_builder, :local_event
+    attr_reader :event, :local_event
 
-    def initialize(event, recurrence_builder)
-      @event = RemoteEvent.new event # AKA Remote Event
-      @recurrence_builder = recurrence_builder
-      attributes = { :uid => event.uid }.merge @event.event_attributes
-      @local_event = LocalEvent.new attributes
+    def initialize(event)
+      @event = RemoteEvent.new event
+      @local_event = LocalEvent.new @event.event_attributes
     end
 
     # Get single-occurrence events built and get a lits of recurrence

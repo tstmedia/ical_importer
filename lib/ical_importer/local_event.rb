@@ -24,8 +24,11 @@ module IcalImporter
     ]
 
     attr_accessor *class_attributes
-    DAYS = %w[sunday monday tuesday wednesday thursday friday saturday]
+    alias utc? utc
+    alias all_day_event? all_day_event
+    alias recurrence? recurrence
 
+    DAYS = %w[sunday monday tuesday wednesday thursday friday saturday]
     DAYS.each do |day|
       class_attributes << "recur_week_#{day}".to_sym
       attr_accessor "recur_week_#{day}"
