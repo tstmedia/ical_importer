@@ -5,8 +5,8 @@ Gem::Specification.new do |gem|
   gem.authors       = ["Jon Phenow"]
   gem.email         = ["jon.phenow@tstmedia.com"]
   gem.description   = %q{Easily import iCal Events from a URL and handle their output}
-  gem.summary       = %q{}
-  gem.homepage      = ""
+  gem.summary       = %q{Uses RiCal to make a much simpler Event Importing interface.}
+  gem.homepage      = "http://github.com/tstmedia/ical_importer"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
