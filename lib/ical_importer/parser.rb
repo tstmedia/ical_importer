@@ -16,7 +16,7 @@ module IcalImporter
     end
 
     def worth_parsing?
-      should_parse? && feed.present? && feed.first
+      should_parse? && feed.present? && feed.first.present?
     end
 
     def all_events(&block)
