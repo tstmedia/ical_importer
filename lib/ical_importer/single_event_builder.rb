@@ -13,12 +13,12 @@ module IcalImporter
       # handle recuring events
       @local_event.tap do |le|
         if @event.recurs?
-          rrule = @event.rrule_property.first # only support recurrence on one schedule
+          @rrule = @event.rrule_property.first # only support recurrence on one schedule
           # set out new event's basic rucurring properties
-          le.attributes = recurrence_attributes rrule
+          le.attributes = recurrence_attributes
 
           set_date_exclusion
-          frequency_set rrule
+          frequency_set
         else # make sure we remove this if it changed
           le.attributes = non_recurrence_attributes
         end
@@ -44,11 +44,11 @@ module IcalImporter
       attributes
     end
 
-    def recurrence_attributes(rrule)
+    def recurrence_attributes
       {
-        :recur_interval => recur_map[rrule.freq],
-        :recur_interval_value => rrule.interval,
-        :recur_end_date => rrule.until.try(:to_datetime)
+        :recur_interval => recur_map[@rrule.freq],
+        :recur_interval_value => @rrule.interval,
+        :recur_end_date => @rrule.until.try(:to_datetime)
       }
     end
 
@@ -57,39 +57,40 @@ module IcalImporter
       @local_event.date_exclusions = @event.exdate.flatten.map{|d| DateExclusion.new(:exclude_date => d)}
     end
 
-    def frequency_set(rrule)
+    def frequency_set
       # if .bounded? is an integer that's googles "recur X times"
       # if that's the case we try to figure out the date it should be by
       # multiplying thise "X" times by the frequency that the event recurrs
-      if rrule.bounded?.is_a? Fixnum # convert X times to a date
-        case rrule.freq
-        when "DAILY"
-          @local_event.recur_end_date = frequency_template.days
-        when "WEEKLY"
-          if rrule.to_ical.include?("BYDAY=")
-            remote_days = rrule.to_ical.split("BYDAY=").last.split(";WKST=").first.split(',')
-            day_map.each do |abbr, day|
-              @local_event.send "recur_week_#{day}=", remote_days.include?(abbr)
-            end
-          else
-            remote_days = [@local_event.start_date_time.wday]
-            wday_map.each do |abbr, day|
-              @local_event.send "recur_week_#{day}=", remote_days.include?(abbr)
-            end
+      case @rrule.freq
+      when "DAILY"
+        @local_event.recur_end_date = frequency_template.days if @rrule.bounded?.is_a? Fixnum # convert X times to a date
+      when "WEEKLY"
+        if @rrule.to_ical.include?("BYDAY=")
+          remote_days = @rrule.to_ical.split("BYDAY=").last.split(";WKST=").first.split(',')
+          day_map.each do |abbr, day|
+            @local_event.send "recur_week_#{day}=", remote_days.include?(abbr)
           end
-          # recurrence X times is probably broken - we can select multiple times in a week
-          @local_event.recur_end_date = (frequency_template / remote_days.length).weeks
-        when "MONTHLY"
-          @local_event.recur_month_repeat_by = (rrule.to_ical =~ /BYDAY/) ? "day_of_week" : "day_of_month"
-          @local_event.recur_end_date = frequency_template.months
-        when "YEARLY"
-          @local_event.recur_end_date = frequency_template.years
+        else
+          remote_days = [@local_event.start_date_time.wday]
+          wday_map.each do |abbr, day|
+            @local_event.send "recur_week_#{day}=", remote_days.include?(abbr)
+          end
         end
+        # recurrence X times is probably broken - we can select multiple times in a week
+        begin
+          @local_event.recur_end_date = (frequency_template / remote_days.length).weeks
+        rescue
+        end
+      when "MONTHLY"
+        @local_event.recur_month_repeat_by = (@rrule.to_ical =~ /BYDAY/) ? "day_of_week" : "day_of_month"
+        @local_event.recur_end_date = frequency_template.months if @rrule.bounded?.is_a? Fixnum # convert X times to a date
+      when "YEARLY"
+        @local_event.recur_end_date = frequency_template.years if @rrule.bounded?.is_a? Fixnum # convert X times to a date
       end
     end
 
     def frequency_template
-      @local_event.start_date_time + (rrule.bounded? * rrule.interval - 1)
+      @local_event.start_date_time + (@rrule.bounded? * @rrule.interval - 1)
     end
 
     def recur_map
