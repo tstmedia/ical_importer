@@ -77,10 +77,7 @@ module IcalImporter
           end
         end
         # recurrence X times is probably broken - we can select multiple times in a week
-        begin
-          @local_event.recur_end_date = (frequency_template / remote_days.length).weeks
-        rescue
-        end
+        @local_event.recur_end_date = (frequency_template / remote_days.length).weeks if @rrule.bounded?.is_a? Fixnum # convert X times to a date
       when "MONTHLY"
         @local_event.recur_month_repeat_by = (@rrule.to_ical =~ /BYDAY/) ? "day_of_week" : "day_of_month"
         @local_event.recur_end_date = frequency_template.months if @rrule.bounded?.is_a? Fixnum # convert X times to a date
