@@ -2,7 +2,7 @@ module IcalImporter
   class RemoteEvent
     attr_accessor :event, :utc
     alias :utc? :utc
-    delegate :summary, :location, :recurrence_id, :description, :recurs?, :rrule_property, :exdate, :to => :event
+    delegate :uid, :summary, :location, :recurrence_id, :description, :recurs?, :rrule_property, :exdate, :to => :event
 
     def initialize(event)
       @event = event
@@ -27,11 +27,11 @@ module IcalImporter
 
     def event_attributes
       {
-        :uid => event.uid,
-        :title => event.summary,
+        :uid => uid,
+        :title => summary,
         :utc => utc?,
-        :description => event.description,
-        :location => event.location || '',
+        :description => description,
+        :location => location || '',
         :start_date_time => start_date_time,
         :end_date_time => end_date_time,
         :all_day_event => all_day_event?
