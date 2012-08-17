@@ -87,7 +87,7 @@ module IcalImporter
     end
 
     def frequency_template
-      @local_event.start_date_time.to_i + (@rrule.bounded? * @rrule.interval - 1)
+      @local_event.start_date_time + (@rrule.bounded? * @rrule.interval - 1)
     end
 
     def recur_map
