@@ -7,7 +7,11 @@ module IcalImporter
       @bare_feed = open_ical
       if should_parse?
         @bare_feed.pos = 0
-        @feed = RiCal.parse @bare_feed
+        begin
+          @feed = RiCal.parse @bare_feed
+        rescue
+          # I know, I'm dirty, fix this to log to a config'd log
+        end
       end
     end
 
