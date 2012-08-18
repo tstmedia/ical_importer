@@ -63,7 +63,7 @@ module IcalImporter
       # multiplying thise "X" times by the frequency that the event recurrs
       case @rrule.freq
       when "DAILY"
-        @local_event.recur_end_date = frequency_template.days if @rrule.bounded?.is_a? Fixnum # convert X times to a date
+        @local_event.recur_end_date = local_event.start_date_time + (rrule.bounded? * rrule.interval - 1).days if @rrule.bounded?.is_a? Fixnum # convert X times to a date
       when "WEEKLY"
         if @rrule.to_ical.include?("BYDAY=")
           remote_days = @rrule.to_ical.split("BYDAY=").last.split(";WKST=").first.split(',')
@@ -77,17 +77,13 @@ module IcalImporter
           end
         end
         # recurrence X times is probably broken - we can select multiple times in a week
-        @local_event.recur_end_date = @local_event.start_date_time + ((@rrule.bounded? * @rrule.interval - 1) / remote_days.length).weeks if @rrule.bounded?.is_a?(Fixnum) 
+        @local_event.recur_end_date = @local_event.start_date_time + ((@rrule.bounded? * @rrule.interval - 1) / remote_days.length).weeks if @rrule.bounded?.is_a?(Fixnum)
       when "MONTHLY"
         @local_event.recur_month_repeat_by = (@rrule.to_ical =~ /BYDAY/) ? "day_of_week" : "day_of_month"
-        @local_event.recur_end_date = frequency_template.months if @rrule.bounded?.is_a? Fixnum # convert X times to a date
+        @local_event.recur_end_date = local_event.start_date_time + (rrule.bounded? * rrule.interval - 1).months if @rrule.bounded?.is_a? Fixnum # convert X times to a date
       when "YEARLY"
-        @local_event.recur_end_date = frequency_template.years if @rrule.bounded?.is_a? Fixnum # convert X times to a date
+        @local_event.recur_end_date = local_event.start_date_time + (rrule.bounded? * rrule.interval - 1).years if @rrule.bounded?.is_a? Fixnum # convert X times to a date
       end
-    end
-
-    def frequency_template
-      @local_event.start_date_time + (@rrule.bounded? * @rrule.interval - 1)
     end
 
     def recur_map

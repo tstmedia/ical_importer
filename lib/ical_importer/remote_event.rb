@@ -47,7 +47,11 @@ module IcalImporter
       if event_time.is_a? DateTime
         (event_time.tzid == :floating) ? event_time : event_time.utc
       else
-        event_time.to_datetime
+        begin
+          event_time.to_datetime
+        rescue
+          event_time
+        end
       end
     end
   end
