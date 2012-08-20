@@ -22,7 +22,11 @@ module IcalImporter
     end
 
     def all_day_event?
-      (Time.parse(end_date_time.to_s) - Time.parse(start_date_time.to_s)) >= 1.day
+      begin
+        (Time.parse(end_date_time.to_s) - Time.parse(start_date_time.to_s)) >= 1.day
+      rescue ArgumentError => e # no time info in '', Defaulting to false
+        false
+      end
     end
 
     def event_attributes
