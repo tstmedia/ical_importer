@@ -9,7 +9,7 @@ module IcalImporter
         @bare_feed.pos = 0
         begin
           @feed = RiCal.parse @bare_feed
-        rescue
+        rescue Exception => e
           # I know, I'm dirty, fix this to log to a config'd log
         end
       end
