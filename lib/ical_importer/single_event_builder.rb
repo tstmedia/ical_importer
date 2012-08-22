@@ -33,7 +33,10 @@ module IcalImporter
         :recur_interval_value => nil,
         :recur_end_date => nil
       }
-      if !@local_event.all_day_event && @event.start_date_time.day != @event.end_date_time.day # single event that spans multiple days
+      if !@local_event.all_day_event &&
+        @event.start_date_time &&
+        @event.end_date_time &&
+        @event.start_date_time.day != @event.end_date_time.day # single event that spans multiple days
         attributes.merge({
           :recur_interval => "day",
           :recur_interval_value => 1,
