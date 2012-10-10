@@ -16,6 +16,12 @@ module IcalImporter
         RiCal.should_receive(:parse).with bare_stuff
         Parser.new(url)
       end
+
+      it "defaults a timeout of 8 secs" do
+        Parser.any_instance.stub(:open_ical).and_return bare_stuff
+        parser = Parser.new(url)
+        parser.timeout.should == 8
+      end
     end
 
     describe "#should_parse?" do
