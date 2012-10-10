@@ -3,10 +3,10 @@ module IcalImporter
     attr_reader :feed, :bare_feed, :url
     attr_accessor :timeout
 
-    def initialize(url)
+    def initialize(url, options={})
       @url = url
       @bare_feed = open_ical
-      @timeout = 8
+      @timeout = options[:timeout] || 8
       if should_parse?
         @bare_feed.pos = 0
         begin
