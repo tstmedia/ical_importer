@@ -1,0 +1,5 @@
+#### 2012-10-10 **Version 0.15**
+
+* Adjustable request timeout on ical feed retrieval
+
+  > @NickLaMuro: https://github.com/tstmedia/ical_importer/pull/2
