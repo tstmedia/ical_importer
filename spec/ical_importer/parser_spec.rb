@@ -107,6 +107,21 @@ module IcalImporter
       it "fails with an invalid protocol" do
         expect { subject.send(:open_ical, 'wrong_proto') }.to raise_error(ArgumentError, "Must be http or https")
       end
+
+      it "will wait up to 8 secs" do
+        Timeout.should_receive(:timeout).with(8)
+        subject.send(:open_ical, 'http')
+      end
+
+      context "when timeout is defined" do
+
+        it "will wait up to the defined time" do
+          subject.timeout = 9
+        Timeout.should_receive(:timeout).with(9)
+        subject.send(:open_ical, 'http')
+        end
+
+      end
     end
 
     describe "#prepped_uri" do
