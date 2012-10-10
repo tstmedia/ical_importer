@@ -17,10 +17,10 @@ module IcalImporter
         Parser.new(url)
       end
 
-      it "defaults a timeout of 8 secs" do
+      it "defaults a timeout to the DEFAULT_TIMEOUT" do
         Parser.any_instance.stub(:open_ical).and_return bare_stuff
         parser = Parser.new(url)
-        parser.timeout.should == 8
+        parser.timeout.should == Parser::DEFAULT_TIMEOUT
       end
 
       context "when a user defines a timeout" do
@@ -108,8 +108,8 @@ module IcalImporter
         expect { subject.send(:open_ical, 'wrong_proto') }.to raise_error(ArgumentError, "Must be http or https")
       end
 
-      it "will wait up to 8 secs" do
-        Timeout.should_receive(:timeout).with(8)
+      it "will wait up to #{Parser::DEFAULT_TIMEOUT} secs" do
+        Timeout.should_receive(:timeout).with(Parser::DEFAULT_TIMEOUT)
         subject.send(:open_ical, 'http')
       end
 
