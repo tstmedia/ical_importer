@@ -112,7 +112,7 @@ module IcalImporter
 
       it "returns nil if no timezone x property exists" do
         subject.stub :feed => [stub(x_properties: { "X-WR-DERPHERP" =>  [@value] })]
-        subject.send(:get_timezone)
+        subject.send(:get_timezone).should be_nil
       end
     end
 
