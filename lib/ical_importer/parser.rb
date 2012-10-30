@@ -22,7 +22,7 @@ module IcalImporter
           # I know, I'm dirty, fix this to log to a config'd log
         end
       end
-      @timezone = get_timzone
+      @timezone = get_timezone
     end
 
     def should_parse?
@@ -56,9 +56,9 @@ module IcalImporter
 
     private
 
-    def get_timzone
-      if @feed.present? && @feed.first.x_properties["X-WR-TIMEZONE"].first
-        @feed.first.x_properties["X-WR-TIMEZONE"].first.value
+    def get_timezone
+      if feed.present? && feed.first.x_properties["X-WR-TIMEZONE"].present?
+        feed.first.x_properties["X-WR-TIMEZONE"].first.value
       end
     end
 
