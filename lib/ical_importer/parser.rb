@@ -64,8 +64,8 @@ module IcalImporter
     end
 
     def get_name
-      if feed.present? && feed.first.x_properties["X-WR-NAME"].present?
-        feed.first.x_properties["X-WR-NAME"].first.value
+      if feed.present? && feed.first.x_properties["X-WR-CALNAME"].present?
+        feed.first.x_properties["X-WR-CALNAME"].first.value
       end
     end
 

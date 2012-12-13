@@ -120,7 +120,7 @@ module IcalImporter
       it "finds the feed's name out of the x properties" do
         @value = stub
         @value.should_receive(:value)
-        subject.stub :feed => [stub(x_properties: { "X-WR-NAME" =>  [@value] })]
+        subject.stub :feed => [stub(x_properties: { "X-WR-CALNAME" =>  [@value] })]
         subject.send(:get_name)
       end
 
