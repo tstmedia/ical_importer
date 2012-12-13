@@ -134,7 +134,6 @@ module IcalImporter
       end
     end
 
-
     describe "#open_ical" do
       it 'cleans up and tries to open an HTTP URL' do
         subject.stub :open => bare_stuff
